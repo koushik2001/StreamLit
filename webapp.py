@@ -38,9 +38,18 @@ def create_df(dataset):
     
     return df
 
+def clean_text(text):
+    text = regex.sub("[^a-zA-Z]", " ", text)
+    text = regex.sub(' +', ' ', text)
+    text = regex.sub(r"\b[b]\b", "", text)
+    return text
+
 df = create_df(data)
 
 X = df.headlines
+
+X = X.apply(clean_text)
+
 
 def tokenize(text):
     text = regex.sub(r'[^\w\s]','',text)
@@ -90,8 +99,14 @@ best_model = joblib.load("another_best.pkl")
 
 def prediction(text):
     labels = ['down','up']
+  
+    temp=[]
 
-    p = best_model.predict(text)
+    cleaner_text = clean_text(text[0])
+
+    temp.append(cleaner_text)
+
+    p = best_model.predict(temp)
 
     s = [str(i) for i in p]
 
